@@ -128,7 +128,11 @@
   .header-search-btn:hover { background: var(--brand-deep); }
   .header-search-btn svg { width: 15px; height: 15px; stroke: currentColor; fill: none; stroke-width: 2; }
 
-  .header-right { display: flex; align-items: center; gap: 2px; flex-shrink: 0; }
+ .header-right {
+   display: flex; align-items: center; gap: 2px;
+   flex-shrink: 0;
+   margin-left: auto;   /* ← 추가 */
+ }
   .hi-btn {
     background: transparent; border: none; cursor: pointer; color: var(--text);
     padding: 7px 6px; display: flex; flex-direction: column; align-items: center; gap: 2px;
