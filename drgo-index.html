@@ -1,0 +1,834 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>닥터고블린컴퍼니</title>
+<link href="https://cdn.jsdelivr.net/gh/orioncactus/pretendard@v1.3.9/dist/web/static/pretendard.css" rel="stylesheet">
+<style>
+  * { box-sizing: border-box; margin: 0; padding: 0; }
+  :root {
+    --bg: #FFFFFF;
+    --bg-soft: #F3F6FB;          /* 쿨 소프트 그레이 */
+    --line: #E1E7F1;             /* 쿨 보더 */
+    --text: #0C1A2E;             /* 네이비 잉크 */
+    --text-dim: #4A586C;
+    --text-mute: #8893A6;
+    --brand: #082B4F;            /* 딥 네이비 — 코어 브랜드 (072 계열) */
+    --brand-2: #0C3D6E;          /* 그라데이션용 밝은 네이비 */
+    --brand-deep: #051A30;       /* 푸터용 가장 짙은 네이비 */
+    --accent: #1E6BE5;           /* 시그널 블루 — 인터랙션/라이브 */
+    --accent-soft: #E8F1FE;      /* 소프트 블루 틴트 */
+    --maxw: 1440px;
+    --pad: 32px;
+  }
+  /* 상단 시그니처 헤어라인 */
+  body::before { content:''; position:fixed; top:0; left:0; right:0; height:3px; z-index:300;
+    background: linear-gradient(90deg, var(--brand) 0%, var(--accent) 55%, #4D9BFF 100%); }
+  html { scroll-behavior: smooth; }
+  body {
+    font-family: 'Pretendard', -apple-system, BlinkMacSystemFont, sans-serif;
+    background: var(--bg-soft);
+    color: var(--text);
+    line-height: 1.65;
+    -webkit-font-smoothing: antialiased;
+  }
+  h1,h2,h3,h4 { font-weight: 700; letter-spacing: -0.02em; }
+  a { color: inherit; }
+  img { display: block; max-width: 100%; }
+  button { font-family: inherit; }
+
+  .page-wrap { background: var(--bg); max-width: var(--maxw); margin: 0 auto; box-shadow: 0 0 0 1px var(--line); }
+  .page { max-width: var(--maxw); margin: 0 auto; padding: 0 var(--pad); }
+
+  /* ===== 헤더 ===== */
+  .site-header {
+    position: sticky; top: 0; z-index: 100;
+    background: rgba(255,255,255,0.94);
+    backdrop-filter: blur(16px);
+    border-bottom: 1px solid var(--line);
+  }
+  .header-inner { display: flex; align-items: center; gap: 24px; padding: 14px 0; }
+  .logo { display: flex; align-items: center; gap: 10px; flex-shrink: 0; text-decoration: none; }
+  .logo-mark {
+    width: 38px; height: 38px; border-radius: 8px;
+    background: var(--brand); color: #fff; position: relative;
+    display: flex; align-items: center; justify-content: center;
+    font-weight: 800; font-size: 17px;
+  }
+  .logo-mark::after { content:'●'; position:absolute; top:-3px; right:-3px; font-size:9px; color:var(--accent); }
+  .logo-text { font-weight: 800; font-size: 17px; letter-spacing: -0.03em; }
+  .logo-sub { font-size: 11px; color: var(--text-mute); margin-top: -2px; }
+
+  .main-nav { list-style: none; display: flex; gap: 26px; }
+  .main-nav > li { position: relative; }
+  .nav-link {
+    color: var(--text); text-decoration: none; font-size: 14.5px; font-weight: 600;
+    padding: 18px 0; display: inline-flex; align-items: center; gap: 5px;
+    cursor: pointer; background: transparent; border: none; transition: color .15s;
+  }
+  .nav-link:hover { color: var(--accent); }
+  .main-nav > li.open > .nav-link { color: var(--accent); }
+  .nav-link .chev { font-size: 9px; color: var(--text-mute); transition: transform .2s; }
+  .main-nav > li.open > .nav-link .chev { transform: rotate(180deg); }
+
+  .mega {
+    position: absolute; top: 100%; left: 0;
+    background: var(--bg); border: 1px solid var(--line);
+    border-radius: 14px; box-shadow: 0 16px 40px rgba(0,0,0,0.12);
+    z-index: 95; opacity: 0; visibility: hidden; transform: translateY(-8px);
+    transition: all .2s; pointer-events: none;
+  }
+  .main-nav > li.open > .mega { opacity: 1; visibility: visible; transform: translateY(0); pointer-events: auto; }
+
+  .mega-shop { width: 560px; padding: 16px; }
+  .mega-shop-grid { display: grid; grid-template-columns: repeat(3,1fr); gap: 4px 16px; }
+  .mega-shop-grid a {
+    display: flex; align-items: center; gap: 9px; padding: 9px 10px;
+    text-decoration: none; font-size: 13px; border-radius: 8px; transition: all .15s; color: var(--text);
+  }
+  .mega-shop-grid a:hover { background: var(--bg-soft); color: var(--accent); }
+  .mega-shop-grid .ic { width: 26px; text-align: center; font-size: 15px; }
+  .mega-shop-all {
+    grid-column: 1 / -1; display: flex; justify-content: space-between; align-items: center;
+    padding: 11px 12px; margin-bottom: 6px; border-radius: 8px; font-weight: 700;
+    background: var(--text); color: #fff; text-decoration: none; font-size: 13px;
+  }
+  .mega-shop-all .accent-arrow { color: var(--accent); }
+
+  .mega-service { width: 360px; padding: 14px; }
+  .mega-service-card {
+    display: flex; align-items: center; gap: 12px; padding: 13px;
+    background: var(--bg-soft); border: 1px solid var(--line); border-radius: 11px;
+    text-decoration: none; transition: all .15s; margin-bottom: 7px;
+  }
+  .mega-service-card:last-child { margin-bottom: 0; }
+  .mega-service-card:hover { background: var(--bg); border-color: var(--text); transform: translateX(2px); }
+  .msc-ic {
+    width: 40px; height: 40px; border-radius: 9px; background: var(--bg); border: 1px solid var(--line);
+    display: flex; align-items: center; justify-content: center; font-size: 19px; flex-shrink: 0; transition: all .15s;
+  }
+  .mega-service-card:hover .msc-ic { background: var(--text); color: var(--accent); border-color: var(--text); }
+  .msc-title { font-size: 13.5px; font-weight: 700; margin-bottom: 1px; }
+  .msc-desc { font-size: 11.5px; color: var(--text-dim); }
+
+  .header-search { flex: 1; max-width: 360px; position: relative; }
+  .header-search input {
+    width: 100%; padding: 11px 46px 11px 18px; background: var(--bg-soft);
+    border: 1px solid var(--line); border-radius: 999px; font-size: 13px; color: var(--text);
+    font-family: inherit; transition: all .15s;
+  }
+  .header-search input::placeholder { color: var(--text-mute); }
+  .header-search input:focus { outline: none; background: var(--bg); border-color: var(--text); }
+  .header-search-btn {
+    position: absolute; right: 4px; top: 50%; transform: translateY(-50%);
+    width: 34px; height: 34px; border-radius: 50%; border: none; cursor: pointer;
+    background: var(--brand); color: #fff; display: flex; align-items: center; justify-content: center; transition: background .15s;
+  }
+  .header-search-btn:hover { background: var(--brand-deep); }
+  .header-search-btn svg { width: 15px; height: 15px; stroke: currentColor; fill: none; stroke-width: 2; }
+
+  .header-right { display: flex; align-items: center; gap: 2px; flex-shrink: 0; }
+  .hi-btn {
+    background: transparent; border: none; cursor: pointer; color: var(--text);
+    padding: 7px 6px; display: flex; flex-direction: column; align-items: center; gap: 2px;
+    font-size: 10px; min-width: 50px; text-decoration: none; position: relative; border-radius: 8px; transition: all .15s;
+  }
+  .hi-btn:hover { color: var(--accent); background: var(--bg-soft); }
+  .hi-btn svg { width: 20px; height: 20px; stroke: currentColor; fill: none; stroke-width: 1.6; }
+  .cart-badge {
+    position: absolute; top: 1px; right: 7px; background: var(--accent); color: #fff;
+    font-size: 9px; font-weight: 700; min-width: 16px; height: 16px; padding: 0 4px; border-radius: 999px;
+    display: flex; align-items: center; justify-content: center;
+  }
+
+  /* 유틸 바 (서비스 의뢰 / 소식 / 게시판 / 강좌) */
+  .util-bar { border-bottom: 1px solid var(--line); background: var(--bg); }
+  .util-inner { display: flex; align-items: center; gap: 22px; padding: 9px 0; font-size: 12.5px; }
+  .util-inner a { color: var(--text-dim); text-decoration: none; font-weight: 500; transition: color .15s; display: inline-flex; align-items:center; gap:5px; }
+  .util-inner a:hover { color: var(--accent); }
+  .util-inner .sep { width: 1px; height: 11px; background: var(--line); }
+  .util-inner .util-hot { color: var(--accent); font-weight: 700; }
+  .util-spacer { flex: 1; }
+  .util-status { display:inline-flex; align-items:center; gap:6px; font-weight:600; font-size:12px; }
+  .util-status .dot { width:7px; height:7px; border-radius:50%; }
+  .util-status.open .dot { background:#22C55E; box-shadow:0 0 0 0 rgba(34,197,94,.5); animation:pulse-g 2s infinite; }
+  .util-status.closed .dot { background:var(--text-mute); }
+  .util-status.open { color:#16A34A; } .util-status.closed { color:var(--text-mute); }
+  @keyframes pulse-g { 0%,100%{box-shadow:0 0 0 0 rgba(34,197,94,.5);} 50%{box-shadow:0 0 0 5px rgba(34,197,94,0);} }
+  @keyframes pulse { 0%,100%{box-shadow:0 0 0 0 rgba(30,107,229,.5);} 50%{box-shadow:0 0 0 6px rgba(30,107,229,0);} }
+
+  /* ===== 히어로 ===== */
+  .hero { padding: 56px 0 44px; }
+  .hero-grid { display: grid; grid-template-columns: 1.45fr 1fr; gap: 44px; align-items: center; }
+  .live-badge {
+    display: inline-flex; align-items: center; gap: 8px; padding: 5px 12px; border-radius: 999px;
+    background: var(--accent-soft); color: var(--accent); font-size: 11px; font-weight: 700;
+    margin-bottom: 22px; border: 1px solid rgba(30,107,229,0.2);
+  }
+  .live-dot { width: 6px; height: 6px; border-radius: 50%; background: var(--accent); animation: pulse 2s infinite; }
+  .hero h1 { font-size: 52px; line-height: 1.16; font-weight: 800; letter-spacing: -0.035em; margin-bottom: 18px; }
+  .hero h1 .accent { color: var(--accent); }
+  .hero-desc { font-size: 16.5px; color: var(--text-dim); margin-bottom: 30px; max-width: 520px; }
+  .hero-ctas { display: flex; gap: 10px; flex-wrap: wrap; }
+  .btn-primary {
+    background: var(--brand); color: #fff; padding: 13px 22px; border-radius: 8px;
+    font-size: 14px; font-weight: 600; border: none; cursor: pointer; transition: background .15s; text-decoration: none; display:inline-block;
+  }
+  .btn-primary:hover { background: var(--brand-deep); }
+  .btn-ghost {
+    background: transparent; color: var(--text); padding: 13px 22px; border-radius: 8px;
+    font-size: 14px; font-weight: 500; border: 1px solid var(--line); cursor: pointer; transition: all .15s; text-decoration:none; display:inline-block;
+  }
+  .btn-ghost:hover { background: var(--bg-soft); border-color: var(--text); }
+
+  .hero-visual { background: var(--bg-soft); border: 1px solid var(--line); border-radius: 18px; padding: 22px; }
+  .hv-header { display: flex; justify-content: space-between; align-items: center; margin-bottom: 18px; }
+  .hv-title { font-size: 11px; color: var(--text-mute); font-weight: 700; letter-spacing: 0.08em; }
+  .hv-onair { display: inline-flex; align-items: center; gap: 6px; font-size: 10px; color: var(--accent); font-weight: 700; }
+  .hv-stats { display: grid; grid-template-columns: 1fr 1fr; gap: 9px; margin-bottom: 14px; }
+  .hv-stat { background: var(--bg); border: 1px solid var(--line); border-radius: 10px; padding: 14px; }
+  .hv-stat-label { font-size: 10px; color: var(--text-mute); margin-bottom: 4px; }
+  .hv-stat-value { font-size: 21px; font-weight: 800; }
+  .hv-stat-value .unit { font-size: 11px; color: var(--text-dim); font-weight: 400; margin-left: 2px; }
+  .hv-wave { height: 46px; display: flex; align-items: flex-end; gap: 3px; padding: 8px; background: var(--bg); border: 1px solid var(--line); border-radius: 10px; }
+  .hv-bar { flex: 1; background: linear-gradient(180deg, var(--accent), var(--brand)); border-radius: 2px; animation: wave 1.4s ease-in-out infinite alternate; }
+  @keyframes wave { from { opacity: .55; } to { opacity: 1; } }
+
+  /* ===== 섹션 공통 ===== */
+  .section { padding: 56px 0; }
+  .section-head { display: flex; justify-content: space-between; align-items: flex-end; margin-bottom: 28px; gap: 16px; }
+  .section-eyebrow { font-size: 11px; color: var(--accent); font-weight: 800; letter-spacing: 0.12em; margin-bottom: 7px; }
+  .section-title { font-size: 30px; font-weight: 800; letter-spacing: -0.03em; }
+  .section-sub { font-size: 14px; color: var(--text-dim); margin-top: 6px; }
+  .section-link {
+    color: var(--text); font-size: 13px; text-decoration: none; font-weight: 600; white-space: nowrap;
+    padding-bottom: 2px; border-bottom: 1.5px solid var(--text); transition: all .15s;
+  }
+  .section-link:hover { color: var(--accent); border-bottom-color: var(--accent); }
+
+  /* ===== 세팅 사례 (drgo.pro 시그니처) ===== */
+  .cases { position: relative; }
+  .cases-track { display: grid; grid-auto-flow: column; grid-auto-columns: calc((100% - 3*16px)/4); gap: 16px; overflow-x: auto; scroll-snap-type: x mandatory; padding-bottom: 6px; scrollbar-width: thin; }
+  .cases-track::-webkit-scrollbar { height: 6px; }
+  .cases-track::-webkit-scrollbar-thumb { background: var(--line); border-radius: 999px; }
+  .case-card { scroll-snap-align: start; border: 1px solid var(--line); border-radius: 16px; overflow: hidden; background: var(--bg); cursor: pointer; transition: all .2s; text-decoration: none; color: inherit; }
+  .case-card:hover { border-color: var(--text); transform: translateY(-3px); box-shadow: 0 12px 28px rgba(0,0,0,0.08); }
+  .case-thumb { aspect-ratio: 16/10; background: linear-gradient(135deg, var(--brand-2), var(--brand-deep)); position: relative; overflow: hidden; }
+  .case-thumb img { width: 100%; height: 100%; object-fit: cover; }
+  .case-thumb .ph { position: absolute; inset: 0; display: flex; align-items: center; justify-content: center; font-size: 30px; color: rgba(255,255,255,0.25); }
+  .case-tag { position: absolute; top: 10px; left: 10px; background: rgba(0,0,0,0.6); color: #fff; font-size: 10px; font-weight: 700; padding: 4px 9px; border-radius: 999px; backdrop-filter: blur(4px); }
+  .case-body { padding: 14px 15px 16px; }
+  .case-title { font-size: 14px; font-weight: 700; margin-bottom: 4px; }
+  .case-meta { font-size: 11.5px; color: var(--text-mute); }
+
+  /* ===== 상품 카드 공통 ===== */
+  .prod-grid { display: grid; grid-template-columns: repeat(4, 1fr); gap: 16px; }
+  .prod-card { border: 1px solid var(--line); border-radius: 14px; overflow: hidden; background: var(--bg); transition: all .2s; cursor: pointer; text-decoration: none; color: inherit; display: flex; flex-direction: column; }
+  .prod-card:hover { border-color: var(--text); transform: translateY(-2px); box-shadow: 0 10px 24px rgba(0,0,0,0.07); }
+  .prod-thumb { height: 188px; background: var(--bg-soft); display: flex; align-items: center; justify-content: center; font-size: 44px; position: relative; }
+  .prod-thumb::before { content:''; position:absolute; inset:0; background: radial-gradient(circle at 50% 40%, rgba(0,0,0,0.02), transparent 70%); }
+  .prod-thumb .badge-hit { position: absolute; top: 10px; left: 10px; background: var(--accent); color: #fff; font-size: 10px; font-weight: 800; padding: 3px 8px; border-radius: 5px; }
+  .prod-body { padding: 14px 15px 16px; display: flex; flex-direction: column; flex: 1; }
+  .prod-brand { font-size: 11px; color: var(--text-mute); font-weight: 700; letter-spacing: 0.02em; margin-bottom: 4px; text-transform: uppercase; }
+  .prod-name { font-size: 13px; font-weight: 500; line-height: 1.45; margin-bottom: 12px; display: -webkit-box; -webkit-line-clamp: 2; -webkit-box-orient: vertical; overflow: hidden; flex: 1; }
+  .prod-price { font-size: 16px; font-weight: 800; }
+  .prod-price .won { font-size: 12px; font-weight: 500; color: var(--text-dim); margin-left: 1px; }
+
+  /* ===== 카테고리 밴드 (HIT 모음전 + 상품) ===== */
+  .cat-band { padding: 52px 0; border-top: 1px solid var(--line); }
+  .cat-band-head { display: flex; align-items: baseline; gap: 12px; margin-bottom: 24px; }
+  .cat-band-title { font-size: 24px; font-weight: 800; letter-spacing: -0.03em; }
+  .cat-band-en { font-size: 12px; color: var(--text-mute); font-weight: 700; letter-spacing: 0.1em; }
+  .cat-band-link { margin-left: auto; }
+  .cat-layout { display: grid; grid-template-columns: 300px 1fr; gap: 16px; align-items: stretch; }
+  .cat-feature {
+    border-radius: 16px; padding: 26px 24px; color: #fff; position: relative; overflow: hidden;
+    display: flex; flex-direction: column; justify-content: space-between; min-height: 320px;
+    background: linear-gradient(150deg, var(--brand) 0%, var(--brand-2) 100%);
+  }
+  .cat-feature::after { content:''; position:absolute; right:-40px; bottom:-40px; width:180px; height:180px; border-radius:50%; background: radial-gradient(circle, rgba(77,155,255,0.45), transparent 70%); }
+  .cat-feature .kicker { font-size: 12px; font-weight: 700; color: var(--accent); margin-bottom: 8px; letter-spacing: 0.02em; }
+  .cat-feature .ftitle { font-size: 26px; font-weight: 800; line-height: 1.25; letter-spacing: -0.03em; }
+  .cat-feature .fbig { font-size: 56px; line-height: 1; margin-top: 18px; }
+  .cat-feature .fbtn { align-self: flex-start; margin-top: 20px; background: #fff; color: var(--text); padding: 10px 18px; border-radius: 8px; font-size: 13px; font-weight: 700; text-decoration: none; z-index: 1; }
+  .cat-feature .fbtn:hover { background: var(--accent); color: #fff; }
+  .cat-prods { display: grid; grid-template-columns: repeat(2, 1fr); gap: 16px; }
+
+  /* ===== 파트너 ===== */
+  .partners { padding: 56px 0; border-top: 1px solid var(--line); text-align: center; }
+  .partners-eyebrow { font-size: 11px; color: var(--accent); font-weight: 800; letter-spacing: 0.12em; margin-bottom: 10px; }
+  .partners h2 { font-size: 26px; margin-bottom: 8px; letter-spacing: -0.03em; }
+  .partners-sub { font-size: 14px; color: var(--text-dim); margin-bottom: 28px; }
+  .partners-marquee { overflow: hidden; -webkit-mask-image: linear-gradient(90deg,transparent,#000 8%,#000 92%,transparent); mask-image: linear-gradient(90deg,transparent,#000 8%,#000 92%,transparent); }
+  .partners-track { display: flex; gap: 14px; width: max-content; animation: marquee 32s linear infinite; }
+  .partners-marquee:hover .partners-track { animation-play-state: paused; }
+  .partner-logo {
+    flex-shrink: 0; height: 56px; padding: 0 26px; border: 1px solid var(--line); border-radius: 12px;
+    background: var(--bg-soft); display: flex; align-items: center; justify-content: center;
+    font-size: 14px; font-weight: 700; color: var(--text-dim); white-space: nowrap;
+  }
+  .partner-logo img { max-height: 30px; width: auto; object-fit: contain; filter: grayscale(1); opacity: .75; transition: all .2s; }
+  .partner-logo:hover img { filter: none; opacity: 1; }
+  @keyframes marquee { from { transform: translateX(0); } to { transform: translateX(-50%); } }
+
+  /* ===== 푸터 ===== */
+  .footer { background: var(--brand-deep); color: #B7C2D4; margin-top: 8px; }
+  .footer-info-bar { border-bottom: 1px solid rgba(255,255,255,0.08); padding: 36px 0; }
+  .footer-info-grid { display: grid; grid-template-columns: repeat(4, 1fr); gap: 16px; }
+  .fib { background: rgba(255,255,255,0.04); border: 1px solid rgba(255,255,255,0.08); border-radius: 14px; padding: 20px; }
+  .fib.accent { border-color: rgba(30,107,229,0.4); background: rgba(30,107,229,0.08); }
+  .fib-label { display: flex; align-items: center; gap: 7px; font-size: 12px; color: #fff; font-weight: 700; margin-bottom: 12px; }
+  .fib-value { font-size: 19px; font-weight: 800; color: #fff; letter-spacing: -0.02em; }
+  .fib-value.small { font-size: 15px; }
+  .fib-sub { font-size: 12px; color: var(--text-mute); margin-top: 4px; }
+  .fib-warn { font-size: 11.5px; color: var(--accent); margin-top: 10px; font-weight: 600; }
+  .fib-kakao { display: inline-block; margin-top: 4px; background: #FEE500; color: #191600; font-size: 13px; font-weight: 800; padding: 9px 16px; border-radius: 8px; text-decoration: none; }
+  .fib-kakao:hover { filter: brightness(.94); }
+  .fib-hours { display: flex; flex-direction: column; gap: 8px; }
+  .fhr { display: flex; gap: 10px; align-items: flex-start; }
+  .fhr-tag { font-size: 10px; font-weight: 800; padding: 3px 7px; border-radius: 5px; background: rgba(255,255,255,0.1); color: #fff; flex-shrink: 0; min-width: 42px; text-align: center; }
+  .fhr-tag.off { background: rgba(30,107,229,0.2); color: var(--accent); }
+  .fhr-times { font-size: 11.5px; color: #B7C2D4; display: flex; flex-direction: column; }
+
+  .footer-main { display: grid; grid-template-columns: 1.6fr 1fr 1fr 1fr; gap: 36px; padding: 44px 0 28px; }
+  .footer-brand .footer-ci { margin-bottom: 18px; }
+  .footer-company { display: flex; flex-direction: column; gap: 3px; }
+  .footer-company .row { display: flex; gap: 10px; font-size: 12px; }
+  .footer-company .label { color: var(--text-mute); min-width: 64px; }
+  .footer-company .value { color: #B7C2D4; }
+  .footer-col h4 { font-size: 13px; color: #fff; margin-bottom: 14px; }
+  .footer-col ul { list-style: none; display: flex; flex-direction: column; gap: 9px; }
+  .footer-col a { font-size: 13px; color: var(--text-mute); text-decoration: none; transition: color .15s; }
+  .footer-col a:hover { color: #fff; }
+  .footer-bottom { display: flex; justify-content: space-between; align-items: center; padding: 22px 0; border-top: 1px solid rgba(255,255,255,0.08); font-size: 12px; color: var(--text-mute); gap: 16px; flex-wrap: wrap; }
+  .footer-bottom-links { display: flex; gap: 18px; }
+  .footer-bottom-links a { color: var(--text-mute); text-decoration: none; }
+  .footer-bottom-links a:hover { color: #fff; }
+
+  /* ===== 빠른 메뉴 ===== */
+  .qm-toggle {
+    position: fixed; right: 24px; bottom: 24px; z-index: 200;
+    background: var(--text); color: #fff; border: none; cursor: pointer;
+    height: 52px; padding: 0 20px; border-radius: 999px; font-size: 13px; font-weight: 700;
+    display: flex; align-items: center; gap: 8px; box-shadow: 0 8px 24px rgba(0,0,0,0.25); transition: all .2s;
+  }
+  .qm-toggle:hover { background: #000; transform: translateY(-2px); }
+  .qm-toggle .qm-dot { width: 8px; height: 8px; border-radius: 50%; background: var(--accent); animation: pulse 2s infinite; }
+  .qm-backdrop { position: fixed; inset: 0; background: rgba(0,0,0,0.4); z-index: 199; opacity: 0; visibility: hidden; transition: all .25s; }
+  .qm-backdrop.active { opacity: 1; visibility: visible; }
+  .qm-panel {
+    position: fixed; right: 24px; bottom: 88px; z-index: 201; width: 300px;
+    background: var(--bg); border: 1px solid var(--line); border-radius: 18px; box-shadow: 0 20px 50px rgba(0,0,0,0.25);
+    padding: 18px; opacity: 0; visibility: hidden; transform: translateY(12px); transition: all .22s;
+  }
+  .qm-panel.active { opacity: 1; visibility: visible; transform: translateY(0); }
+  .qm-head { display: flex; justify-content: space-between; align-items: center; margin-bottom: 14px; }
+  .qm-head .t { font-size: 14px; font-weight: 800; display: inline-flex; align-items: center; gap: 7px; }
+  .qm-head .t .d { width: 7px; height: 7px; border-radius: 50%; background: var(--accent); }
+  .qm-close { background: none; border: none; cursor: pointer; color: var(--text-mute); font-size: 16px; }
+  .qm-link {
+    display: flex; align-items: center; gap: 12px; padding: 12px; border-radius: 11px;
+    border: 1px solid var(--line); text-decoration: none; color: var(--text); margin-bottom: 8px; transition: all .15s; background: var(--bg-soft);
+  }
+  .qm-link:last-child { margin-bottom: 0; }
+  .qm-link:hover { border-color: var(--text); background: var(--bg); transform: translateX(2px); }
+  .qm-link.kakao { background: #FEE500; border-color: #FEE500; color: #191600; }
+  .qm-link .qic { width: 36px; height: 36px; border-radius: 9px; background: var(--bg); border: 1px solid var(--line); display: flex; align-items: center; justify-content: center; font-size: 17px; flex-shrink: 0; }
+  .qm-link.kakao .qic { background: rgba(0,0,0,0.06); border-color: transparent; }
+  .qm-link .qt { font-size: 13.5px; font-weight: 700; }
+  .qm-link .qd { font-size: 11px; color: var(--text-dim); }
+  .qm-link.kakao .qd { color: rgba(0,0,0,0.55); }
+  .qm-arrow { margin-left: auto; color: var(--text-mute); }
+
+  .toast { position: fixed; bottom: 24px; left: 50%; transform: translateX(-50%) translateY(20px); background: var(--text); color: #fff; padding: 12px 20px; border-radius: 8px; font-size: 13px; font-weight: 500; opacity: 0; pointer-events: none; transition: all .25s; z-index: 9999; }
+  .toast.show { opacity: 1; transform: translateX(-50%) translateY(0); }
+
+  /* ===== 반응형 ===== */
+  @media (max-width: 1080px) {
+    .main-nav, .header-search { display: none; }
+    .hero-grid { grid-template-columns: 1fr; }
+    .cat-layout { grid-template-columns: 1fr; }
+    .cat-feature { min-height: 0; }
+  }
+  @media (max-width: 880px) {
+    :root { --pad: 18px; }
+    .hero h1 { font-size: 38px; }
+    .prod-grid { grid-template-columns: repeat(2, 1fr); }
+    .cat-prods { grid-template-columns: repeat(2, 1fr); }
+    .footer-info-grid { grid-template-columns: 1fr 1fr; }
+    .footer-main { grid-template-columns: 1fr 1fr; }
+    .cases-track { grid-auto-columns: 78%; }
+  }
+  @media (max-width: 560px) {
+    .prod-grid, .cat-prods, .footer-info-grid, .footer-main { grid-template-columns: 1fr; }
+    .util-inner { overflow-x: auto; flex-wrap: nowrap; white-space: nowrap; -webkit-overflow-scrolling: touch; }
+    .util-inner a, .util-inner .util-status { flex-shrink: 0; }
+    .util-status { display: none; }
+    .section-title { font-size: 24px; }
+  }
+</style>
+</head>
+<body>
+<div class="page-wrap">
+
+  <!-- ===== 헤더 ===== -->
+  <header class="site-header">
+    <div class="page header-inner">
+      <a href="#" class="logo">
+        <div class="logo-mark">닥</div>
+        <div>
+          <div class="logo-text">닥터고블린컴퍼니</div>
+          <div class="logo-sub">라이브 스트리밍 토탈 솔루션</div>
+        </div>
+      </a>
+
+      <ul class="main-nav">
+        <li class="has-mega">
+          <button class="nav-link">서비스 의뢰 <span class="chev">▼</span></button>
+          <div class="mega mega-service">
+            <a href="#" class="mega-service-card">
+              <div class="msc-ic">🎬</div>
+              <div><div class="msc-title">방송 세팅 의뢰</div><div class="msc-desc">방문 · 원격 · 스튜디오 · 야외 · 중계</div></div>
+            </a>
+            <a href="#" class="mega-service-card">
+              <div class="msc-ic">📦</div>
+              <div><div class="msc-title">장비 렌탈 / 룸 대여</div><div class="msc-desc">장비 단기 렌탈 · 방송룸 1~3호 임대</div></div>
+            </a>
+            <a href="#" class="mega-service-card">
+              <div class="msc-ic">🎨</div>
+              <div><div class="msc-title">디자인 / 영상 의뢰</div><div class="msc-desc">캐리커쳐 · 이미지 · 영상 · 시그 음악</div></div>
+            </a>
+            <a href="#" class="mega-service-card">
+              <div class="msc-ic">🧭</div>
+              <div><div class="msc-title">컨설팅 / 강연</div><div class="msc-desc">방송 환경 설계 컨설팅 · 교육</div></div>
+            </a>
+          </div>
+        </li>
+
+        <li class="has-mega">
+          <button class="nav-link">장비 구매 <span class="chev">▼</span></button>
+          <div class="mega mega-shop">
+            <div class="mega-shop-grid">
+              <a href="#" class="mega-shop-all"><span>전체 카테고리 보기</span><span class="accent-arrow">→</span></a>
+              <a href="#"><span class="ic">🖥️</span>컴퓨터 · 부품</a>
+              <a href="#"><span class="ic">⌨️</span>주변기기</a>
+              <a href="#"><span class="ic">📷</span>비디오 · 카메라</a>
+              <a href="#"><span class="ic">🎙️</span>오디오</a>
+              <a href="#"><span class="ic">💡</span>조명</a>
+              <a href="#"><span class="ic">🔌</span>케이블 · 멀티탭</a>
+              <a href="#"><span class="ic">🛠️</span>세팅비</a>
+              <a href="#"><span class="ic">🎨</span>디자인 의뢰</a>
+              <a href="#"><span class="ic">🏠</span>룸 대여 / 렌탈</a>
+            </div>
+          </div>
+        </li>
+
+        <li><a href="#" class="nav-link">소식</a></li>
+        <li><a href="#" class="nav-link">게시판</a></li>
+        <li><a href="#" class="nav-link">강좌</a></li>
+      </ul>
+
+      <div class="header-search">
+        <input type="text" placeholder="상품·서비스를 검색해보세요">
+        <button class="header-search-btn" aria-label="검색">
+          <svg viewBox="0 0 24 24"><circle cx="11" cy="11" r="8"/><line x1="21" y1="21" x2="16.65" y2="16.65"/></svg>
+        </button>
+      </div>
+
+      <div class="header-right">
+        <a href="#" class="hi-btn">
+          <svg viewBox="0 0 24 24"><path d="M20 21v-2a4 4 0 0 0-4-4H8a4 4 0 0 0-4 4v2"/><circle cx="12" cy="7" r="4"/></svg>
+          로그인
+        </a>
+        <a href="#" class="hi-btn">
+          <span class="cart-badge">0</span>
+          <svg viewBox="0 0 24 24"><circle cx="9" cy="21" r="1"/><circle cx="20" cy="21" r="1"/><path d="M1 1h4l2.68 13.39a2 2 0 0 0 2 1.61h9.72a2 2 0 0 0 2-1.61L23 6H6"/></svg>
+          장바구니
+        </a>
+      </div>
+    </div>
+
+    <!-- 유틸 바 -->
+    <div class="util-bar">
+      <div class="page util-inner">
+        <a href="#" class="util-hot">💬 세팅 의뢰</a>
+        <span class="sep"></span>
+        <a href="#">소식</a>
+        <a href="#">게시판</a>
+        <a href="#">강좌</a>
+        <a href="#">자주 묻는 질문</a>
+        <div class="util-spacer"></div>
+        <span class="util-status open" id="bizStatus"><span class="dot"></span><span id="bizStatusText">영업 중</span></span>
+      </div>
+    </div>
+  </header>
+
+  <!-- ===== 히어로 ===== -->
+  <section class="hero">
+    <div class="page hero-grid">
+      <div>
+        <div class="live-badge"><span class="live-dot"></span>실시간 세팅 의뢰 진행중</div>
+        <h1>방송이 멈추지 않게,<br><span class="accent">우리가 만들어 드립니다.</span></h1>
+        <p class="hero-desc">방문·원격 세팅부터 장비 구매, 룸 대여, 디자인 의뢰까지. 라이브 스트리밍에 필요한 모든 것을 한 곳에서 해결하세요.</p>
+        <div class="hero-ctas">
+          <a href="#" class="btn-primary">세팅 의뢰하기 →</a>
+          <a href="#cases" class="btn-ghost">세팅 사례 보기</a>
+        </div>
+      </div>
+      <div class="hero-visual">
+        <div class="hv-header">
+          <div class="hv-title">LIVE STATUS</div>
+          <div class="hv-onair"><span class="live-dot"></span>ON AIR</div>
+        </div>
+        <div class="hv-stats">
+          <div class="hv-stat"><div class="hv-stat-label">누적 세팅 사례</div><div class="hv-stat-value">300<span class="unit">건+</span></div></div>
+          <div class="hv-stat"><div class="hv-stat-label">취급 상품</div><div class="hv-stat-value">2,000<span class="unit">종+</span></div></div>
+          <div class="hv-stat"><div class="hv-stat-label">파트너 브랜드</div><div class="hv-stat-value">16<span class="unit">개사</span></div></div>
+          <div class="hv-stat"><div class="hv-stat-label">방송룸</div><div class="hv-stat-value">3<span class="unit">개</span></div></div>
+        </div>
+        <div class="hv-wave">
+          <div class="hv-bar" style="height:30%"></div><div class="hv-bar" style="height:55%"></div>
+          <div class="hv-bar" style="height:40%"></div><div class="hv-bar" style="height:70%"></div>
+          <div class="hv-bar" style="height:85%"></div><div class="hv-bar" style="height:60%"></div>
+          <div class="hv-bar" style="height:95%"></div><div class="hv-bar" style="height:75%"></div>
+          <div class="hv-bar" style="height:50%"></div><div class="hv-bar" style="height:80%"></div>
+          <div class="hv-bar" style="height:65%"></div><div class="hv-bar" style="height:90%"></div>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- ===== 세팅 사례 ===== -->
+  <section class="section cases" id="cases">
+    <div class="page">
+      <div class="section-head">
+        <div>
+          <div class="section-eyebrow">OUR WORK</div>
+          <h2 class="section-title">닥터고블린의 세팅 사례</h2>
+          <p class="section-sub">현장에서 완성한 방송 환경, 직접 확인해보세요.</p>
+        </div>
+        <a href="#" class="section-link">전체보기 →</a>
+      </div>
+      <div class="cases-track" id="casesTrack">
+        <a href="#" class="case-card"><div class="case-thumb"><span class="case-tag">스튜디오</span><img src="https://www.drgo.pro/data/banner/105" alt="세팅 사례" onerror="this.style.display='none';this.parentElement.querySelector('.ph').style.display='flex'"><span class="ph">🎬</span></div><div class="case-body"><div class="case-title">전문 방송 스튜디오 세팅</div><div class="case-meta">컴퓨터 · 카메라 · 조명 · 오디오</div></div></a>
+        <a href="#" class="case-card"><div class="case-thumb"><span class="case-tag">방문 세팅</span><img src="https://www.drgo.pro/data/banner/104" alt="세팅 사례" onerror="this.style.display='none';this.parentElement.querySelector('.ph').style.display='flex'"><span class="ph">📷</span></div><div class="case-body"><div class="case-title">개인 방송룸 풀세팅</div><div class="case-meta">송출 PC · 듀얼 모니터 · 마이크</div></div></a>
+        <a href="#" class="case-card"><div class="case-thumb"><span class="case-tag">야외 중계</span><img src="https://www.drgo.pro/data/banner/103" alt="세팅 사례" onerror="this.style.display='none';this.parentElement.querySelector('.ph').style.display='flex'"><span class="ph">🎥</span></div><div class="case-body"><div class="case-title">야외 라이브 중계 세팅</div><div class="case-meta">본딩 송출 · PTZ · 무선 오디오</div></div></a>
+        <a href="#" class="case-card"><div class="case-thumb"><span class="case-tag">조명</span><img src="https://www.drgo.pro/data/banner/102" alt="세팅 사례" onerror="this.style.display='none';this.parentElement.querySelector('.ph').style.display='flex'"><span class="ph">💡</span></div><div class="case-body"><div class="case-title">감성 조명 인테리어 세팅</div><div class="case-meta">패널 · COB · 레일 조명</div></div></a>
+        <a href="#" class="case-card"><div class="case-thumb"><span class="case-tag">원격</span><img src="https://www.drgo.pro/data/banner/101" alt="세팅 사례" onerror="this.style.display='none';this.parentElement.querySelector('.ph').style.display='flex'"><span class="ph">🖥️</span></div><div class="case-body"><div class="case-title">원격 프로그램 세팅 지원</div><div class="case-meta">OBS · 송출 최적화 · 트러블슈팅</div></div></a>
+        <a href="#" class="case-card"><div class="case-thumb"><span class="case-tag">오디오</span><img src="https://www.drgo.pro/data/banner/100" alt="세팅 사례" onerror="this.style.display='none';this.parentElement.querySelector('.ph').style.display='flex'"><span class="ph">🎙️</span></div><div class="case-body"><div class="case-title">스튜디오 음향 튜닝</div><div class="case-meta">믹서 · 콘덴서 마이크 · 모니터링</div></div></a>
+      </div>
+    </div>
+  </section>
+
+  <!-- ===== 방송세팅추천 ===== -->
+  <section class="section" style="padding-top:0;">
+    <div class="page">
+      <div class="section-head">
+        <div>
+          <div class="section-eyebrow">CURATED PICKS</div>
+          <h2 class="section-title">방송 세팅 추천</h2>
+          <p class="section-sub">닥터고블린이 직접 골라 검증한 핵심 장비</p>
+        </div>
+        <a href="#" class="section-link">전체보기 →</a>
+      </div>
+      <div class="prod-grid">
+        <a href="#" class="prod-card"><div class="prod-thumb">🕹️<span class="badge-hit">PICK</span></div><div class="prod-body"><div class="prod-brand">MIDDLETHINGS</div><div class="prod-name">미들리모트 조이스틱</div><div class="prod-price">3,089,500<span class="won">원</span></div></div></a>
+        <a href="#" class="prod-card"><div class="prod-thumb">🎚️</div><div class="prod-body"><div class="prod-brand">MIDDLETHINGS</div><div class="prod-name">APC-R Mini</div><div class="prod-price">965,000<span class="won">원</span></div></div></a>
+        <a href="#" class="prod-card"><div class="prod-thumb">🎛️</div><div class="prod-body"><div class="prod-brand">MIDDLETHINGS</div><div class="prod-name">APC-R Mini Lite</div><div class="prod-price">742,200<span class="won">원</span></div></div></a>
+        <a href="#" class="prod-card"><div class="prod-thumb">📺</div><div class="prod-body"><div class="prod-brand">Blackmagic Design</div><div class="prod-name">ATEM MINI PRO 라이브 스트림 스위처</div><div class="prod-price">565,800<span class="won">원</span></div></div></a>
+      </div>
+    </div>
+  </section>
+
+  <!-- ===== 컴퓨터 ===== -->
+  <section class="cat-band">
+    <div class="page">
+      <div class="cat-band-head">
+        <span class="cat-band-title">컴퓨터</span>
+        <span class="cat-band-en">COMPUTER</span>
+        <a href="#" class="section-link cat-band-link">전체보기 →</a>
+      </div>
+      <div class="cat-layout">
+        <div class="cat-feature">
+          <div><div class="kicker">2025 빅이벤트</div><div class="ftitle">HIT 상품<br>모음전</div></div>
+          <div class="fbig">🖥️</div>
+          <a href="#" class="fbtn">기획전 보러가기 →</a>
+        </div>
+        <div class="cat-prods">
+          <a href="#" class="prod-card"><div class="prod-thumb">⌨️<span class="badge-hit">HIT</span></div><div class="prod-body"><div class="prod-brand">QSENN</div><div class="prod-name">Q104 PBT 기계식 키보드 [블랙·저소음]</div><div class="prod-price">60,800<span class="won">원</span></div></div></a>
+          <a href="#" class="prod-card"><div class="prod-thumb">⌨️</div><div class="prod-body"><div class="prod-brand">QSENN</div><div class="prod-name">Q104 PBT 기계식 키보드 [화이트·저소음]</div><div class="prod-price">61,500<span class="won">원</span></div></div></a>
+          <a href="#" class="prod-card"><div class="prod-thumb">🖱️</div><div class="prod-body"><div class="prod-brand">Logitech</div><div class="prod-name">G102 2세대 라이트싱크 게이밍 마우스 화이트</div><div class="prod-price">27,500<span class="won">원</span></div></div></a>
+          <a href="#" class="prod-card"><div class="prod-thumb">🎛️</div><div class="prod-body"><div class="prod-brand">Elgato</div><div class="prod-name">엘가토 스트림덱 XL</div><div class="prod-price">382,000<span class="won">원</span></div></div></a>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- ===== 비디오 ===== -->
+  <section class="cat-band">
+    <div class="page">
+      <div class="cat-band-head">
+        <span class="cat-band-title">비디오</span>
+        <span class="cat-band-en">VIDEO</span>
+        <a href="#" class="section-link cat-band-link">전체보기 →</a>
+      </div>
+      <div class="cat-layout">
+        <div class="cat-feature">
+          <div><div class="kicker">2025 빅이벤트</div><div class="ftitle">HIT 상품<br>모음전</div></div>
+          <div class="fbig">📷</div>
+          <a href="#" class="fbtn">기획전 보러가기 →</a>
+        </div>
+        <div class="cat-prods">
+          <a href="#" class="prod-card"><div class="prod-thumb">📷<span class="badge-hit">HIT</span></div><div class="prod-body"><div class="prod-brand">Canon</div><div class="prod-name">EOS RP 미러리스 카메라 바디</div><div class="prod-price">1,289,000<span class="won">원</span></div></div></a>
+          <a href="#" class="prod-card"><div class="prod-thumb">🔭</div><div class="prod-body"><div class="prod-brand">Canon</div><div class="prod-name">RF 24-70mm F2.8L IS USM</div><div class="prod-price">3,299,000<span class="won">원</span></div></div></a>
+          <a href="#" class="prod-card"><div class="prod-thumb">🔍</div><div class="prod-body"><div class="prod-brand">Canon</div><div class="prod-name">RF 28mm F2.8 STM</div><div class="prod-price">425,000<span class="won">원</span></div></div></a>
+          <a href="#" class="prod-card"><div class="prod-thumb">🔋</div><div class="prod-body"><div class="prod-brand">Canon</div><div class="prod-name">DR-E6 + AC-E6N 정품 배터리</div><div class="prod-price">220,000<span class="won">원</span></div></div></a>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- ===== 오디오 ===== -->
+  <section class="cat-band">
+    <div class="page">
+      <div class="cat-band-head">
+        <span class="cat-band-title">오디오</span>
+        <span class="cat-band-en">AUDIO</span>
+        <a href="#" class="section-link cat-band-link">전체보기 →</a>
+      </div>
+      <div class="cat-layout">
+        <div class="cat-feature">
+          <div><div class="kicker">2025 빅이벤트</div><div class="ftitle">HIT 상품<br>모음전</div></div>
+          <div class="fbig">🎙️</div>
+          <a href="#" class="fbtn">기획전 보러가기 →</a>
+        </div>
+        <div class="cat-prods">
+          <a href="#" class="prod-card"><div class="prod-thumb">🎤<span class="badge-hit">HIT</span></div><div class="prod-body"><div class="prod-brand">Audio-Technica</div><div class="prod-name">AT2035 콘덴서 마이크</div><div class="prod-price">240,000<span class="won">원</span></div></div></a>
+          <a href="#" class="prod-card"><div class="prod-thumb">🎙️</div><div class="prod-body"><div class="prod-brand">OnStage</div><div class="prod-name">7311B 탁상형 마이크 스탠드</div><div class="prod-price">60,000<span class="won">원</span></div></div></a>
+          <a href="#" class="prod-card"><div class="prod-thumb">🎚️</div><div class="prod-body"><div class="prod-brand">Yamaha</div><div class="prod-name">AG06 MK2 오디오 믹서 화이트</div><div class="prod-price">350,000<span class="won">원</span></div></div></a>
+          <a href="#" class="prod-card"><div class="prod-thumb">🎛️</div><div class="prod-body"><div class="prod-brand">TC Helicon</div><div class="prod-name">GO XLR 오디오 인터페이스</div><div class="prod-price">670,000<span class="won">원</span></div></div></a>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- ===== 조명 ===== -->
+  <section class="cat-band">
+    <div class="page">
+      <div class="cat-band-head">
+        <span class="cat-band-title">조명</span>
+        <span class="cat-band-en">LIGHTING</span>
+        <a href="#" class="section-link cat-band-link">전체보기 →</a>
+      </div>
+      <div class="cat-layout">
+        <div class="cat-feature">
+          <div><div class="kicker">2025 빅이벤트</div><div class="ftitle">HIT 상품<br>모음전</div></div>
+          <div class="fbig">💡</div>
+          <a href="#" class="fbtn">기획전 보러가기 →</a>
+        </div>
+        <div class="cat-prods">
+          <a href="#" class="prod-card"><div class="prod-thumb">🔆<span class="badge-hit">HIT</span></div><div class="prod-body"><div class="prod-brand">유쾌한생각</div><div class="prod-name">룩스패드 K63H + 스탠드 세트</div><div class="prod-price">223,000<span class="won">원</span></div></div></a>
+          <a href="#" class="prod-card"><div class="prod-thumb">💡</div><div class="prod-body"><div class="prod-brand">유쾌한생각</div><div class="prod-name">룩스패드 K22H + 거치대 MT-88 세트</div><div class="prod-price">93,000<span class="won">원</span></div></div></a>
+          <a href="#" class="prod-card"><div class="prod-thumb">🔦</div><div class="prod-body"><div class="prod-brand">Aurora</div><div class="prod-name">오로라 ST-BA180</div><div class="prod-price">290,000<span class="won">원</span></div></div></a>
+          <a href="#" class="prod-card"><div class="prod-thumb">🪩</div><div class="prod-body"><div class="prod-brand">Sandy</div><div class="prod-name">디스코240 특수조명</div><div class="prod-price">170,000<span class="won">원</span></div></div></a>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- ===== 파트너 ===== -->
+  <section class="partners">
+    <div class="partners-eyebrow">OUR PARTNERS</div>
+    <h2>든든한 파트너를 소개합니다</h2>
+    <p class="partners-sub">함께 라이브 스트리밍의 기준을 만들어가는 브랜드</p>
+    <div class="partners-marquee">
+      <div class="partners-track" id="partnersTrack">
+        <!-- 채워짐 (JS) -->
+      </div>
+    </div>
+  </section>
+
+  <!-- ===== 푸터 ===== -->
+  <footer class="footer">
+    <div class="footer-info-bar">
+      <div class="page footer-info-grid">
+        <div class="fib">
+          <div class="fib-label">📦 쇼핑몰 문의</div>
+          <div class="fib-value">010-2274-4002</div>
+          <div class="fib-sub">전화 또는 1:1 게시판으로 문의</div>
+        </div>
+        <div class="fib accent">
+          <div class="fib-label">🎬 세팅 의뢰 문의</div>
+          <a href="http://pf.kakao.com/_xcxduTn/chat" class="fib-kakao">💬 카카오톡 문의</a>
+          <div class="fib-warn">⚠️ 세팅 상담은 전화로 진행하지 않습니다</div>
+        </div>
+        <div class="fib">
+          <div class="fib-label">🕐 상담 영업 시간</div>
+          <div class="fib-hours">
+            <div class="fhr"><span class="fhr-tag">세팅</span><span class="fhr-times"><span>월~목 12:30 – 20:30</span><span>금~토 13:00 – 18:30</span></span></div>
+            <div class="fhr"><span class="fhr-tag">쇼핑몰</span><span class="fhr-times"><span>월~목 11:30 – 19:30</span><span>금~토 13:00 – 18:30</span></span></div>
+            <div class="fhr"><span class="fhr-tag off">휴무</span><span class="fhr-times"><span>일요일 · 공휴일</span></span></div>
+          </div>
+        </div>
+        <div class="fib">
+          <div class="fib-label">🏦 무통장 입금 계좌</div>
+          <div class="fib-value small">국민은행 821337-00-010680</div>
+          <div class="fib-sub">(주)닥터고블린컴퍼니</div>
+        </div>
+      </div>
+    </div>
+
+    <div class="page">
+      <div class="footer-main">
+        <div class="footer-brand">
+          <div class="footer-ci">
+            <svg viewBox="0 0 240 56" width="200" xmlns="http://www.w3.org/2000/svg" aria-label="닥터고블린컴퍼니">
+              <text x="0" y="38" font-family="Pretendard,sans-serif" font-size="34" font-weight="900" fill="#fff" letter-spacing="-1">닥</text>
+              <polygon points="42,11 45,21 55,21 47,27 50,37 42,31 34,37 37,27 29,21 39,21" fill="#1E6BE5"/>
+              <text x="58" y="38" font-family="Pretendard,sans-serif" font-size="34" font-weight="900" fill="#fff" letter-spacing="-1">터고블린</text>
+            </svg>
+          </div>
+          <div class="footer-company">
+            <div class="row"><span class="label">법인명</span><span class="value">(주)닥터고블린컴퍼니</span></div>
+            <div class="row"><span class="label">대표</span><span class="value">황진선</span></div>
+            <div class="row"><span class="label">사업자등록</span><span class="value">631-88-00312</span></div>
+            <div class="row"><span class="label">통신판매업</span><span class="value">제 2023-서울동작-0816호</span></div>
+            <div class="row"><span class="label">주소</span><span class="value">서울특별시 동작구 장승배기로 142, 2층</span></div>
+            <div class="row"><span class="label">TEL</span><span class="value">010-2274-4002</span></div>
+            <div class="row"><span class="label">기술팀</span><span class="value">tech2026@drgo.pro</span></div>
+            <div class="row"><span class="label">지원팀</span><span class="value">drgoblin@drgo.pro</span></div>
+          </div>
+        </div>
+
+        <div class="footer-col">
+          <h4>서비스</h4>
+          <ul>
+            <li><a href="#">방송 세팅 의뢰</a></li>
+            <li><a href="#">장비 렌탈 · 룸 대여</a></li>
+            <li><a href="#">디자인 · 영상 의뢰</a></li>
+            <li><a href="#">컨설팅 · 강연</a></li>
+          </ul>
+        </div>
+
+        <div class="footer-col">
+          <h4>고객 지원</h4>
+          <ul>
+            <li><a href="#">FAQ</a></li>
+            <li><a href="#">1:1 문의하기</a></li>
+            <li><a href="#">공지사항</a></li>
+            <li><a href="#">강좌</a></li>
+            <li><a href="#">🖥️ 원격 프로그램 다운로드</a></li>
+          </ul>
+        </div>
+
+        <div class="footer-col">
+          <h4>팔로우</h4>
+          <ul>
+            <li><a href="https://www.youtube.com/@drgoblincompany">유튜브 채널</a></li>
+            <li><a href="https://blog.naver.com/dr_goblin">공식 블로그</a></li>
+            <li><a href="http://pf.kakao.com/_xcxduTn/chat">카카오 채널</a></li>
+            <li><a href="#">회사소개</a></li>
+          </ul>
+        </div>
+      </div>
+
+      <div class="footer-bottom">
+        <div>© 2026 Dr.Goblin Company. All rights reserved.</div>
+        <div class="footer-bottom-links">
+          <a href="#">서비스이용약관</a>
+          <a href="#">개인정보처리방침</a>
+          <a href="#">회사소개</a>
+        </div>
+      </div>
+    </div>
+  </footer>
+
+</div>
+
+<!-- ===== 빠른 메뉴 ===== -->
+<button class="qm-toggle" id="qmToggle" onclick="toggleQM()"><span class="qm-dot"></span>빠른 메뉴</button>
+<div class="qm-backdrop" id="qmBackdrop" onclick="closeQM()"></div>
+<div class="qm-panel" id="qmPanel">
+  <div class="qm-head">
+    <span class="t"><span class="d"></span>빠른 메뉴</span>
+    <button class="qm-close" onclick="closeQM()">✕</button>
+  </div>
+  <a href="http://pf.kakao.com/_xcxduTn/chat" class="qm-link kakao">
+    <span class="qic">💬</span><span><span class="qt">카카오톡 상담</span><span class="qd">세팅 의뢰는 카카오톡으로</span></span><span class="qm-arrow">→</span>
+  </a>
+  <a href="#" class="qm-link" onclick="showToast('서비스 의뢰 페이지로 이동합니다');return false;">
+    <span class="qic">📝</span><span><span class="qt">서비스 의뢰</span><span class="qd">방문·원격·렌탈 신청</span></span><span class="qm-arrow">→</span>
+  </a>
+  <a href="#" class="qm-link" onclick="showToast('원격 프로그램 다운로드를 시작합니다');return false;">
+    <span class="qic">🖥️</span><span><span class="qt">원격 프로그램</span><span class="qd">TeamViewer QuickSupport</span></span><span class="qm-arrow">→</span>
+  </a>
+  <a href="https://www.youtube.com/@drgoblincompany" class="qm-link">
+    <span class="qic">▶️</span><span><span class="qt">유튜브</span><span class="qd">@drgoblincompany</span></span><span class="qm-arrow">→</span>
+  </a>
+  <a href="https://blog.naver.com/dr_goblin" class="qm-link">
+    <span class="qic">📓</span><span><span class="qt">네이버 블로그</span><span class="qd">세팅 후기 · 소식</span></span><span class="qm-arrow">→</span>
+  </a>
+</div>
+
+<div class="toast" id="toast"></div>
+
+<script>
+  // 빠른 메뉴
+  function toggleQM(){
+    const p=document.getElementById('qmPanel'), b=document.getElementById('qmBackdrop');
+    if(p.classList.contains('active')) closeQM();
+    else { p.classList.add('active'); b.classList.add('active'); }
+  }
+  function closeQM(){
+    document.getElementById('qmPanel').classList.remove('active');
+    document.getElementById('qmBackdrop').classList.remove('active');
+  }
+  document.addEventListener('keydown',e=>{ if(e.key==='Escape') closeQM(); });
+
+  // 메가 메뉴 호버
+  document.querySelectorAll('.main-nav > li.has-mega').forEach(li=>{
+    let t=null;
+    li.addEventListener('mouseenter',()=>{ clearTimeout(t);
+      li.parentElement.querySelectorAll('li.has-mega').forEach(s=>{ if(s!==li) s.classList.remove('open'); });
+      li.classList.add('open');
+    });
+    li.addEventListener('mouseleave',()=>{ t=setTimeout(()=>li.classList.remove('open'),150); });
+  });
+
+  // 토스트
+  let toastT=null;
+  function showToast(msg){
+    const el=document.getElementById('toast'); el.textContent=msg; el.classList.add('show');
+    clearTimeout(toastT); toastT=setTimeout(()=>el.classList.remove('show'),2200);
+  }
+
+  // 파트너 마퀴 (실제 로고, 무한 루프 위해 2배 복제)
+  const partners=[
+    ['에버미디어','avermedia'],['브라운앤컴퍼니','brown'],['커넥스페이스','connecspace'],['씨티엘','ctl'],
+    ['대원씨티에스','dwcts'],['하이픽셀','hipixel'],['케이와이','ky'],['미디어박스','mediabox'],
+    ['미들씽즈','middlethings'],['패러블','parable'],['피씨팩토리','pcfactory'],['유쾌한생각','pthink'],
+    ['RTA','rta'],['위플랩','weflab'],['휙스컴','whixcom'],['YYCAMPRO','yycampro']
+  ];
+  (function(){
+    const track=document.getElementById('partnersTrack'); if(!track) return;
+    const base='https://drgo.pro/theme/g5_shop_002/mobile/shop/img/partner/';
+    const html=partners.map(([name,slug])=>
+      `<div class="partner-logo"><img src="${base}${slug}.png" alt="${name}" onerror="this.replaceWith(document.createTextNode('${name}'))"></div>`
+    ).join('');
+    track.innerHTML=html+html; // 2배 복제 → 끊김 없는 루프
+  })();
+
+  // 영업 상태 자동 판별 (세팅/쇼핑몰 통합)
+  function checkBiz(){
+    const now=new Date(), day=now.getDay(), t=now.getHours()+now.getMinutes()/60;
+    let open=false;
+    if(day>=1&&day<=4) open=(t>=11.5&&t<20.5);      // 월~목: 쇼핑 11:30 ~ 세팅 20:30
+    else if(day===5||day===6) open=(t>=13&&t<18.5);  // 금~토
+    const el=document.getElementById('bizStatus'), tx=document.getElementById('bizStatusText');
+    if(el){ el.classList.toggle('open',open); el.classList.toggle('closed',!open); tx.textContent=open?'영업 중':'영업 종료'; }
+  }
+  checkBiz(); setInterval(checkBiz,60000);
+</script>
+</body>
+</html>
